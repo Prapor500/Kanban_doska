@@ -11,6 +11,10 @@ dependencies = [
     "psycopg2-binary>=2.9.10",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
+    "pyjokes>=0.8.3",
+    "redis>=5.2.1",
     "sqlalchemy>=2.0.39",
+    "tinydb>=4.8.2",
     "uvicorn>=0.34.0",
 ]
+

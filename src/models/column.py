@@ -12,5 +12,5 @@ class Column(Base):
     name: Mapped[str] = mapped_column(String(255))
     position: Mapped[int]
 
-    project: Mapped["Project"] = relationship(back_populates="columns")
-    tasks: Mapped[list["Task"]] = relationship(back_populates="column")
+    project: Mapped["Project"] = relationship(back_populates="project_column")
+    tasks: Mapped[list["Task"]] = relationship(back_populates="task_column")
