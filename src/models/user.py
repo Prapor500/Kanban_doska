@@ -8,12 +8,13 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    first_name: Mapped[str] = mapped_column(String(128))
-    last_name: Mapped[str] = mapped_column(String(128))
-    middle_name: Mapped[str] = mapped_column(String(128))
-    gender: Mapped[str] = mapped_column(String(128))
     password: Mapped[str] = mapped_column(String(128))
     email: Mapped[str] = mapped_column(String(128))
+
+    first_name: Mapped[str] = mapped_column(String(128), nullable=True)
+    last_name: Mapped[str] = mapped_column(String(128), nullable=True)
+    middle_name: Mapped[str] = mapped_column(String(128), nullable=True)
+    gender: Mapped[str] = mapped_column(String(128), nullable=True)
 
     created_projects: Mapped[list["Project"]] = relationship(
         back_populates="creator")

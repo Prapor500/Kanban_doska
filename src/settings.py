@@ -17,7 +17,10 @@ class Settings(BaseSettings):
     JAM_SETTINGS: dict[str, Any] = {
         "alg": "HS256",
         "secret_key": "secret",
-        "expire": 2600
+        "expire": 2600,
+        "public_key": "JAM_PUBLIC_KEY",
+        "private_key": "JAM_PRIVATE_KEY",
+        "list": []
     }
 
 
