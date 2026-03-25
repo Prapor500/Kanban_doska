@@ -1,10 +1,9 @@
 from .db import get_db
 from sqlalchemy.orm import Session
-from models.user import User
 from fastapi import Depends, HTTPException, Request
 from src.infrastructure.jaminstance import jam
 from jam.exceptions import TokenLifeTimeExpired
-from models.user import User
+from src.models.user import User
 
 
 def get_access_token(user_id):

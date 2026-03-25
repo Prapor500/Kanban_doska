@@ -3,8 +3,8 @@ from typing import Optional
 
 
 class ProjectBase(BaseModel):
-    name: str
-    description: Optional[str] = None
+    created_by: int
+    name:       str
 
 
 class ProjectCreate(ProjectBase):
@@ -12,8 +12,8 @@ class ProjectCreate(ProjectBase):
 
 
 class ProjectUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
+    created_by: Optional[int] = None
+    name:       Optional[str] = None
 
 
 class ProjectOut(ProjectBase):

@@ -4,8 +4,8 @@ from typing import Optional
 
 class ColumnBase(BaseModel):
     project_id: int
-    name: str
-    position: Optional[int] = 0
+    name:       str
+    position:   int
 
 
 class ColumnCreate(ColumnBase):
@@ -13,8 +13,9 @@ class ColumnCreate(ColumnBase):
 
 
 class ColumnUpdate(BaseModel):
-    name: Optional[str] = None
-    position: Optional[int] = None
+    project_id: Optional[int] = None
+    name:       Optional[str] = None
+    position:   Optional[int] = None
 
 
 class ColumnOut(ColumnBase):

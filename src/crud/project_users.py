@@ -3,43 +3,35 @@ from src.models.project_user import ProjectUser
 from src.schemas.project_users import ProjectUserCreate, ProjectUserUpdate
 
 
-def get_project_user(db: Session, pu_id: int) -> ProjectUser | None:
-    return db.query(ProjectUser).filter(ProjectUser.id == pu_id).first()
+def get_project_user(db: Session, user_id: int, project_id: int) -> ProjectUser | None:
+    return db.query(ProjectUser).filter_by(user_id=user_id, project_id=project_id).first()
 
 
-def get_project_users(db: Session, project_id: int, skip: int = 0, limit: int = 100) -> list[ProjectUser]:
-    return (
-        db.query(ProjectUser)
-          .filter(ProjectUser.project_id == project_id)
-          .offset(skip)
-          .limit(limit)
-          .all()
-    )
+def get_all_project_users(db: Session) -> list[ProjectUser]:
+    return db.query(ProjectUser).all()
 
 
 def create_project_user(db: Session, data: ProjectUserCreate) -> ProjectUser:
-    pu = ProjectUser(**data.model_dump())
-    db.add(pu)
+    obj = ProjectUser(**data.model_dump())
+    db.add(obj)
     db.commit()
-    db.refresh(pu)
-    return pu
+    return obj
 
 
-def update_project_user(db: Session, pu_id: int, updates: ProjectUserUpdate) -> ProjectUser | None:
-    pu = get_project_user(db, pu_id)
-    if not pu:
+def update_project_user(db: Session, user_id: int, project_id: int, data: ProjectUserUpdate) -> ProjectUser | None:
+    obj = get_project_user(db, user_id, project_id)
+    if not obj:
         return None
-    for field, val in updates.model_dump(exclude_unset=True).items():
-        setattr(pu, field, val)
+    for k, v in data.model_dump(exclude_unset=True).items():
+        setattr(obj, k, v)
     db.commit()
-    db.refresh(pu)
-    return pu
+    return obj
 
 
-def delete_project_user(db: Session, pu_id: int) -> ProjectUser | None:
-    pu = get_project_user(db, pu_id)
-    if not pu:
+def delete_project_user(db: Session, user_id: int, project_id: int) -> ProjectUser | None:
+    obj = get_project_user(db, user_id, project_id)
+    if not obj:
         return None
-    db.delete(pu)
+    db.delete(obj)
     db.commit()
-    return pu
+    return obj

@@ -7,8 +7,8 @@ def get_task(db: Session, task_id: int) -> Task | None:
     return db.get(Task, task_id)
 
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100) -> list[Task]:
-    return db.query(Task).order_by(Task.created_at).offset(skip).limit(limit).all()
+def get_all_tasks(db: Session) -> list[Task]:
+    return db.query(Task).all()
 
 
 def create_task(db: Session, data: TaskCreate) -> Task:
@@ -19,12 +19,12 @@ def create_task(db: Session, data: TaskCreate) -> Task:
     return obj
 
 
-def update_task(db: Session, task_id: int, updates: TaskUpdate) -> Task | None:
+def update_task(db: Session, task_id: int, data: TaskUpdate) -> Task | None:
     obj = get_task(db, task_id)
     if not obj:
         return None
-    for field, val in updates.model_dump(exclude_unset=True).items():
-        setattr(obj, field, val)
+    for k, v in data.model_dump(exclude_unset=True).items():
+        setattr(obj, k, v)
     db.commit()
     db.refresh(obj)
     return obj

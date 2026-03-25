@@ -3,9 +3,8 @@ from typing import Optional
 
 
 class ProjectUserBase(BaseModel):
-    project_id: int
     user_id:    int
-    role:       Optional[str] = 'viewer'
+    project_id: int
 
 
 class ProjectUserCreate(ProjectUserBase):
@@ -13,10 +12,9 @@ class ProjectUserCreate(ProjectUserBase):
 
 
 class ProjectUserUpdate(BaseModel):
-    role: Optional[str] = None
+    user_id:    Optional[int] = None
+    project_id: Optional[int] = None
 
 
 class ProjectUserOut(ProjectUserBase):
-    id: int
-
     model_config = {"from_attributes": True}
