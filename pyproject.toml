@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.15.2",
+    "email-validator>=2.2.0",
     "fastapi>=0.115.12",
     "jamlib>=1.0.0",
     "psycopg2-binary>=2.9.10",
@@ -17,4 +18,3 @@ dependencies = [
     "tinydb>=4.8.2",
     "uvicorn>=0.34.0",
 ]
-
