@@ -15,7 +15,7 @@ class UserBase(BaseModel):
     last_name: str
     middle_name: Optional[str] = None
     gender: Optional[str] = None
-    email: EmailStr
+    email: str
 
 
 class UserUpdate(BaseModel):

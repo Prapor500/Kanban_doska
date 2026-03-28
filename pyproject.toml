@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.15.2",
+    "check-unused",
     "email-validator>=2.2.0",
     "fastapi>=0.115.12",
     "jamlib>=1.0.0",
