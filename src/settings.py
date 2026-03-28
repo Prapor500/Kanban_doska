@@ -14,13 +14,13 @@ class Settings(BaseSettings):
     DB_PORT: int
 
     JAM_SETTINGS: dict[str, Any] = {
-        "jwt": {
-            "alg": "HS256",
-            "secret_key": "secret",
-            "expire": 2600,
-            "public_key": "JAM_PUBLIC_KEY",
-            "private_key": "JAM_PRIVATE_KEY",
-        }
+        "auth_type": "jwt",
+        "alg": "HS256",
+        "secret_key": "secret",
+        "expire": 2600,
+        "public_key": "JAM_PUBLIC_KEY",
+        "private_key": "JAM_PRIVATE_KEY",
+
     }
 
     model_config = SettingsConfigDict(
