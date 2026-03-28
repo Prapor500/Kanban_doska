@@ -1,5 +1,4 @@
-from pydantic_settings import BaseSettings
-import os
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Any
 
 
@@ -8,20 +7,26 @@ class Settings(BaseSettings):
     SERVER_PORT: int = 8000
     SERVER_TEST: bool = True
 
-    DB_USERNAME: str = os.getenv('DB_USERNAME')
-    DB_PASSWORD: str = os.getenv('DB_PASSWORD')
-    DB_NAME: str = os.getenv('DB_NAME')
-    DB_ADDR: str = os.getenv('DB_ADDR')
-    DB_PORT: str = os.getenv('DB_PORT')
+    DB_USERNAME: str
+    DB_PASSWORD: str
+    DB_NAME: str
+    DB_ADDR: str
+    DB_PORT: int
 
     JAM_SETTINGS: dict[str, Any] = {
-        "alg": "HS256",
-        "secret_key": "secret",
-        "expire": 2600,
-        "public_key": "JAM_PUBLIC_KEY",
-        "private_key": "JAM_PRIVATE_KEY",
-        "list": []
+        "jwt": {
+            "alg": "HS256",
+            "secret_key": "secret",
+            "expire": 2600,
+            "public_key": "JAM_PUBLIC_KEY",
+            "private_key": "JAM_PRIVATE_KEY",
+        }
     }
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8"
+    )
 
 
 settings = Settings()
