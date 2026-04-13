@@ -2,7 +2,12 @@ from tests.helpers import register_user
 
 
 def test_register_login_and_duplicate_email(client):
-    payload = {"email": "alice@example.com", "password": "secret123"}
+    payload = {
+        "email": "alice@example.com",
+        "password": "secret123",
+        "first_name": "Alice",
+        "last_name": "Doe",
+    }
 
     register_response = client.post("/auth/register", json=payload)
     assert register_response.status_code == 201

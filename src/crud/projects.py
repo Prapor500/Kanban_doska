@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_
 from src.models.project import Project
 from src.models.project_user import ProjectUser
@@ -8,15 +8,24 @@ from src.schemas.projects import ProjectCreate, ProjectUpdate
 
 
 def get_project(db: Session, project_id: int) -> Project | None:
-    return db.get(Project, project_id)
+    return db.query(Project).options(
+        joinedload(Project.creator),
+        joinedload(Project.users)
+    ).filter(Project.id == project_id).first()
 
 
 def get_all_projects(db: Session) -> list[Project]:
-    return db.query(Project).all()
+    return db.query(Project).options(
+        joinedload(Project.creator),
+        joinedload(Project.users)
+    ).all()
 
 
 def get_user_projects(db: Session, user_id: int) -> list[Project]:
-    return db.query(Project).outerjoin(ProjectUser).filter(
+    return db.query(Project).options(
+        joinedload(Project.creator),
+        joinedload(Project.users)
+    ).outerjoin(ProjectUser).filter(
         or_(
             Project.created_by == user_id,
             ProjectUser.user_id == user_id
