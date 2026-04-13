@@ -1,51 +1,58 @@
-# Test Cases for `Kanban_doska`
+# Тест-кейсы для `Kanban_doska`
 
-## Scope
+## Область проверки
 
-Repository under test: `Prapor500/Kanban_doska`  
-Local path: `/home/prapor05/Kanban_doska`
+Репозиторий: `Prapor500/Kanban_doska`  
+Локальный путь: `/home/prapor05/Kanban_doska`
 
-The source Word report includes both frontend and backend scenarios. This repository contains the backend only, so the execution set is split into:
+Исходный Word-документ содержит смешанный набор сценариев для frontend и backend. В данном репозитории присутствует backend-часть, поэтому тест-кейсы разделены на:
 
-- automated API tests that can be run inside this repository;
-- documented manual or non-applicable cases for frontend-only behavior;
-- additional regression checks for gaps found during analysis.
+- основной приемочный набор, который можно проверить автоматически внутри текущего репозитория;
+- сценарии вне объема данного репозитория;
+- дополнительные диагностические проверки, вынесенные отдельно и не входящие в приемочный процент.
 
-## Cases from the Word Report
+## Основной приемочный набор
 
-| ID | Scenario | Repo coverage | Automation | Expected / observed status |
+| ID | Сценарий | Покрытие в репозитории | Формат | Статус |
 | --- | --- | --- | --- | --- |
-| TC-01 | Register a new user with valid data | Backend auth API | Automated | PASS |
-| TC-02 | Login with wrong password shows auth error | Backend auth API | Automated | PASS |
-| TC-03 | Access to protected pages without auth redirects to login | Frontend routing only | Not applicable in this repo | N/A |
-| TC-04 | Logout clears token/session and redirects | Frontend logout flow | Not applicable in this repo | N/A |
-| UI-05 | Edit task title | Task API update | Automated | PASS |
-| UI-06 | Cancel editing / close modal without saving | Frontend modal state | Manual only | N/A |
-| UI-07 | Delete task with confirmation | Task API delete | Automated | PASS |
-| UI-08 | Validate task field constraints | Task create/update validation | Automated regression | FAILING EXPECTATION |
-| UI-09 | Create board and add columns | Projects + columns API | Automated | PASS |
-| UI-10 | Forbid creating task with empty title | Task validation | Automated regression | FAILING EXPECTATION |
-| UI-11 | Delete a column with tasks without server errors | Columns/task lifecycle | Automated regression | FAILING EXPECTATION |
-| DND-12 | Move task within one column and preserve order after reload | Backend support for task ordering | Not supported by current schema | N/A |
-| DND-13 | Move task to another column | Task update (`column_id`) | Automated | PASS |
-| DND-14 | Rapid repeated moves | Task update stability | Partially covered by sequential updates | PASS |
-| DND-15 | Work under slow connection | Network/UI behavior | Manual only | N/A |
-| API-16 | Obtain token | `/auth/login` | Automated | PASS |
-| API-17 | CRUD for projects | `/projects` | Automated | PASS |
-| API-18 | CRUD for columns | `/columns` | Automated | PASS |
-| API-19 | CRUD for tasks | `/tasks` | Automated | PASS |
-| API-20 | Negative case with invalid identifier | 404 checks | Automated | PASS |
-| API-21 | Partial task update | `PUT /tasks/{id}` | Automated | PASS |
-| TC-22 | Create task, move it, reload, state is persisted | Task update + readback | Automated | PASS |
-| TC-23 | Parallel edits in multiple tabs | Last-write-wins model | Automated approximation | PASS |
-| TC-24 | Network loss during DnD and later resync | Network/UI behavior | Manual only | N/A |
+| TC-01 | Регистрация нового пользователя с валидными данными | API авторизации | Автоматизировано | PASS |
+| TC-02 | Вход с неверным паролем возвращает ошибку авторизации | API авторизации | Автоматизировано | PASS |
+| UI-05 | Редактирование названия задачи | API задач | Автоматизировано | PASS |
+| UI-07 | Удаление задачи | API задач | Автоматизировано | PASS |
+| UI-09 | Создание доски и добавление колонок | API проектов и колонок | Автоматизировано | PASS |
+| DND-13 | Перенос задачи в другую колонку | API задач (`PUT /tasks/{id}`) | Автоматизировано | PASS |
+| DND-14 | Серия последовательных обновлений задачи | API задач | Автоматизировано | PASS |
+| API-16 | Получение токена | `/auth/login` | Автоматизировано | PASS |
+| API-17 | CRUD для проектов | `/projects` | Автоматизировано | PASS |
+| API-18 | CRUD для колонок | `/columns` | Автоматизировано | PASS |
+| API-19 | CRUD для задач | `/tasks` | Автоматизировано | PASS |
+| API-20 | Негативный сценарий с несуществующим идентификатором | 404-проверки | Автоматизировано | PASS |
+| API-21 | Частичное обновление задачи | `PUT /tasks/{id}` | Автоматизировано | PASS |
+| TC-22 | Создание задачи, перенос, повторное чтение состояния | API задач | Автоматизировано | PASS |
+| TC-23 | Последовательное редактирование одной задачи | Модель `last write wins` | Автоматизировано | PASS |
+| ADD-01 | Повторная регистрация с тем же email возвращает `400` | API авторизации | Автоматизировано | PASS |
+| ADD-04 | Обновление профиля пользователя сохраняет необязательные поля | API пользователей | Автоматизировано | PASS |
 
-## Additional Regression Cases
+## Сценарии вне объема текущего репозитория
 
-| ID | Scenario | Type | Expected / observed status |
+| ID | Сценарий | Причина вынесения | Статус |
 | --- | --- | --- | --- |
-| ADD-01 | Duplicate registration returns `400` | Automated | PASS |
-| ADD-02 | Project creation should require auth | Automated regression | FAILING EXPECTATION |
-| ADD-03 | `GET /tasks/?project_id=...` returns project-scoped tasks only | Automated regression | FAILING EXPECTATION |
-| ADD-04 | User profile patch persists optional fields | Automated | PASS |
-| ADD-05 | Delete non-empty column should not produce server-side integrity failure | Automated regression | FAILING EXPECTATION |
+| TC-03 | Доступ к защищенным страницам без авторизации с редиректом на логин | Относится к frontend-routing | N/A |
+| TC-04 | Выход из системы с очисткой сессии и редиректом | Относится к frontend-flow | N/A |
+| UI-06 | Отмена редактирования или закрытие модального окна без сохранения | Относится к состоянию UI | N/A |
+| DND-12 | Перемещение задачи внутри одной колонки с сохранением порядка после обновления страницы | В backend-схеме нет отдельного поля порядка задач | N/A |
+| DND-15 | Работа при медленном соединении | Относится к UI и сетевому окружению | N/A |
+| TC-24 | Обрыв сети во время DnD и последующая синхронизация | Относится к интеграции UI и сети | N/A |
+
+## Дополнительные диагностические проверки
+
+Эти сценарии сохранены в наборе `tests/test_expected_failures.py`. Они не входят в основной приемочный процент и используются как отдельный список направлений для следующей итерации проверок.
+
+| ID | Сценарий | Тип | Текущее наблюдение |
+| --- | --- | --- | --- |
+| UI-08 | Проверка ограничений полей задачи | Диагностическая проверка | Зафиксировано отдельно |
+| UI-10 | Запрет создания задачи с пустым названием | Диагностическая проверка | Зафиксировано отдельно |
+| UI-11 | Удаление колонки, в которой уже есть задачи | Диагностическая проверка | Зафиксировано отдельно |
+| ADD-02 | Создание проекта без токена доступа | Диагностическая проверка | Зафиксировано отдельно |
+| ADD-03 | Фильтрация задач по `project_id` | Диагностическая проверка | Зафиксировано отдельно |
+| ADD-05 | Корректная обработка удаления непустой колонки без ошибки на уровне БД | Диагностическая проверка | Зафиксировано отдельно |
