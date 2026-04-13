@@ -9,8 +9,10 @@ class TaskLog(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"), nullable=True)
     message: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=datetime.datetime.utcnow)
 
     task: Mapped["Task"] = relationship(back_populates="logs")
+    user: Mapped["User"] = relationship()

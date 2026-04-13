@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from src.schemas.users import UserUpdate
 
 
-def create_user_raw(db: Session, email: str, password: str) -> User:
-    user = User(email=email, password=password)
+def create_user_raw(db: Session, email: str, password: str, first_name: str, last_name: str) -> User:
+    user = User(email=email, password=password, first_name=first_name, last_name=last_name)
     db.add(user)
     db.commit()
     return user

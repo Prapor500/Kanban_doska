@@ -27,5 +27,11 @@ async def register(request: RegisterRequest, db: Session = Depends(get_db)):
     if get_user_by_email(db, request.email):
         raise HTTPException(400, "Почта уже зарегистрирована")
 
-    user = create_user_raw(db, email=request.email, password=request.password)
+    user = create_user_raw(
+        db,
+        email=request.email,
+        password=request.password,
+        first_name=request.first_name,
+        last_name=request.last_name
+    )
     return {"status": "ok", "user_id": user.id}

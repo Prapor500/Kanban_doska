@@ -4,13 +4,15 @@ from sqlalchemy.orm import Session
 from src.core.services.db import get_db
 from src.crud.task_logs import get_all_task_logs, get_task_log, create_task_log, update_task_log, delete_task_log
 from src.schemas.task_logs import TaskLogCreate, TaskLogOut, TaskLogUpdate
+from src.models.user import User
+from src.core.services.auth_for_users import get_current_user_from_token
 
 router_task_logs = APIRouter(prefix="/task-logs", tags=["task-logs"])
 
 
 @router_task_logs.get("/", response_model=List[TaskLogOut])
-def list_task_logs(db: Session = Depends(get_db)):
-    return get_all_task_logs(db)
+def list_task_logs(task_id: int | None = None, db: Session = Depends(get_db)):
+    return get_all_task_logs(db, task_id=task_id)
 
 
 @router_task_logs.get("/{log_id}", response_model=TaskLogOut)
@@ -22,8 +24,12 @@ def read_task_log(log_id: int, db: Session = Depends(get_db)):
 
 
 @router_task_logs.post("/", response_model=TaskLogOut)
-def create_task_log_endpoint(data: TaskLogCreate, db: Session = Depends(get_db)):
-    return create_task_log(db, data)
+def create_task_log_endpoint(
+    data: TaskLogCreate, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_from_token)
+):
+    return create_task_log(db, data, user_id=current_user.id)
 
 
 @router_task_logs.put("/{log_id}", response_model=TaskLogOut)

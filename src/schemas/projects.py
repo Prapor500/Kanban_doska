@@ -1,5 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
+
+
+class UserInProject(BaseModel):
+    id: int
+    email: EmailStr
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
 
 
 class ProjectBase(BaseModel):
@@ -8,7 +15,8 @@ class ProjectBase(BaseModel):
 
 
 class ProjectCreate(ProjectBase):
-    pass
+    columns: Optional[list[str]] = None
+    member_emails: Optional[list[EmailStr]] = None
 
 
 class ProjectUpdate(BaseModel):
@@ -18,5 +26,7 @@ class ProjectUpdate(BaseModel):
 
 class ProjectOut(ProjectBase):
     id: int
+    users: list[UserInProject] = []
+    creator: UserInProject
 
     model_config = {"from_attributes": True}

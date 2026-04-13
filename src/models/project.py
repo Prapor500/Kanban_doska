@@ -11,6 +11,6 @@ class Project(Base):
     name: Mapped[str] = mapped_column(String(255))
 
     creator: Mapped["User"] = relationship(back_populates="created_projects")
-    columns: Mapped[list["Column"]] = relationship(back_populates="project")
+    columns: Mapped[list["Column"]] = relationship(back_populates="project", cascade="all, delete-orphan")
     users: Mapped[list["User"]] = relationship(
         secondary="project_user", back_populates="projects")

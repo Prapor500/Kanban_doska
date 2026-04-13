@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Boolean, Text, DateTime, ForeignKey
+from sqlalchemy import String, Boolean, Text, DateTime, ForeignKey, Integer
 import datetime
 from .base import Base
 
@@ -14,6 +14,8 @@ class Task(Base):
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)
     is_finished: Mapped[bool] = mapped_column(Boolean, default=False)
+    position: Mapped[int] = mapped_column(Integer, default=0)
+    parent_id: Mapped[int | None] = mapped_column(ForeignKey("task.id"), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=datetime.datetime.utcnow)
     finished_at: Mapped[datetime.datetime] = mapped_column(
@@ -24,4 +26,8 @@ class Task(Base):
         foreign_keys=[created_by], back_populates="created_tasks")
     assignee: Mapped["User"] = relationship(
         foreign_keys=[assigned_to], back_populates="assigned_tasks")
-    logs: Mapped[list["TaskLog"]] = relationship(back_populates="task")
+    
+    parent: Mapped["Task | None"] = relationship("Task", remote_side=[id], back_populates="subtasks")
+    subtasks: Mapped[list["Task"]] = relationship("Task", back_populates="parent", cascade="all, delete-orphan")
+
+    logs: Mapped[list["TaskLog"]] = relationship(back_populates="task", cascade="all, delete-orphan")

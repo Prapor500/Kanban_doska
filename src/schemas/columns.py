@@ -8,8 +8,9 @@ class ColumnBase(BaseModel):
     position:   int
 
 
-class ColumnCreate(ColumnBase):
-    pass
+class ColumnCreate(BaseModel):
+    project_id: int
+    name:       str
 
 
 class ColumnUpdate(BaseModel):

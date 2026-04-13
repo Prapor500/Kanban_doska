@@ -1,7 +1,7 @@
 services:
   restapi:
-    image: my_backend
     build: .
+    image: my_backend
     restart: always
     depends_on:
       - db
@@ -9,22 +9,24 @@ services:
       - .env
     ports:
       - "8000:8000"
-    entrypoint: ["python3", "main.py"]
+    
+
   db:
-    image: postgres
+    image: postgres:17
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=my_db_name
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: my_db_name
     ports:
       - "5432:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+
   adminer:
     image: adminer
     restart: always
     depends_on:
       - db
     ports:
-      - '8081:8080'
+      - "8081:8080"

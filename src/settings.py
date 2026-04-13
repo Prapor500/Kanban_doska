@@ -3,7 +3,7 @@ from typing import Any
 
 
 class Settings(BaseSettings):
-    SERVER_ADDR: str = "0.0.0.0"
+    SERVER_ADDR: str = "db"
     SERVER_PORT: int = 8000
     SERVER_TEST: bool = True
 
@@ -13,15 +13,19 @@ class Settings(BaseSettings):
     DB_ADDR: str
     DB_PORT: int
 
-    JAM_SETTINGS: dict[str, Any] = {
-        "auth_type": "jwt",
-        "alg": "HS256",
-        "secret_key": "secret",
-        "expire": 2600,
-        "public_key": "JAM_PUBLIC_KEY",
-        "private_key": "JAM_PRIVATE_KEY",
-
-    }
+    JWT_SECRET: str
+    @property
+    def JAM_SETTINGS(self) -> dict[str, Any]:
+        return {
+            "jwt": {
+                "alg": "HS256",
+                "secret_key": self.JWT_SECRET,
+                "expire": 2600,
+            },
+            "starlette": {
+                "header_name": "Authorization",
+            }
+        }
 
     model_config = SettingsConfigDict(
         env_file=".env",
