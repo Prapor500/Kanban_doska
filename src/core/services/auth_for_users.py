@@ -7,6 +7,9 @@ from src.crud.users import get_user_by_email
 from src.core.services.db import get_db
 
 
+from src.core.services.auth_utils import verify_password
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def validate_user(email: str, password: str, db: Session) -> bool:  # Проверка пользователя
@@ -15,11 +18,9 @@ def validate_user(email: str, password: str, db: Session) -> bool:  # Прове
         print(f"DEBUG: User with email {email} not found")
         return False
     
-    is_valid = user.password == password
+    is_valid = verify_password(password, user.password)
     if not is_valid:
         print(f"DEBUG: Password mismatch for {email}")
-        print(f"DEBUG: Input:  '{password}' (len: {len(password)})")
-        print(f"DEBUG: Stored: '{user.password}' (len: {len(user.password)})")
     
     return is_valid
 

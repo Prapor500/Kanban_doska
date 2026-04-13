@@ -1,11 +1,12 @@
 from sqlalchemy.orm import Session
 from src.models.user import User
-from sqlalchemy.orm import Session
 from src.schemas.users import UserUpdate
+from src.core.services.auth_utils import get_password_hash
 
 
 def create_user_raw(db: Session, email: str, password: str, first_name: str, last_name: str) -> User:
-    user = User(email=email, password=password, first_name=first_name, last_name=last_name)
+    hashed_password = get_password_hash(password)
+    user = User(email=email, password=hashed_password, first_name=first_name, last_name=last_name)
     db.add(user)
     db.commit()
     return user

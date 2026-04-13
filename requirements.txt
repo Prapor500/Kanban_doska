@@ -9,4 +9,5 @@ pyjokes>=0.8.3,
 redis>=5.2.1,
 sqlalchemy>=2.0.39,
 tinydb>=4.8.2,
-uvicorn>=0.34.0
+uvicorn>=0.34.0,
+passlib[bcrypt]>=1.7.4
