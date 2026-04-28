@@ -1,10 +1,10 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from src.models.task_log import TaskLog
 from src.schemas.task_logs import TaskLogCreate, TaskLogUpdate
 
 
 def get_task_log(db: Session, log_id: int) -> TaskLog | None:
-    return db.get(TaskLog, log_id)
+    return db.query(TaskLog).options(joinedload(TaskLog.user)).filter(TaskLog.id == log_id).first()
 
 
 def get_all_task_logs(db: Session, task_id: int | None = None) -> list[TaskLog]:
@@ -40,6 +40,9 @@ def delete_task_log(db: Session, log_id: int) -> TaskLog | None:
     obj = get_task_log(db, log_id)
     if not obj:
         return None
-    db.delete(obj)
+    # Access lazy relations while session is active, then expunge before delete
+    _ = obj.user
+    db.expunge(obj)
+    db.query(TaskLog).filter(TaskLog.id == log_id).delete()
     db.commit()
     return obj

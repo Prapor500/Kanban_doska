@@ -19,10 +19,17 @@ def list_projects(
 
 
 @router_projects.get("/{project_id}", response_model=ProjectOut)
-def read_project(project_id: int, db: Session = Depends(get_db)):
+def read_project(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_from_token)
+):
     pr = get_project(db, project_id)
     if not pr:
         raise HTTPException(status_code=404, detail="Project not found")
+    is_member = pr.created_by == current_user.id or any(u.id == current_user.id for u in pr.users)
+    if not is_member:
+        raise HTTPException(status_code=403, detail="Access denied")
     return pr
 
 

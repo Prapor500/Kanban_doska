@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from src.models.task import Task
@@ -94,8 +95,14 @@ def update_task(db: Session, task_id: int, data: TaskUpdate, user_id: int | None
     obj = get_task(db, task_id)
     if not obj:
         return None
-    
+
     updates = data.model_dump(exclude_unset=True)
+
+    if 'is_finished' in updates:
+        if updates['is_finished'] and not obj.is_finished:
+            updates['finished_at'] = datetime.datetime.utcnow()
+        elif not updates['is_finished']:
+            updates['finished_at'] = None
 
     if user_id:
         author = db.get(User, user_id)
