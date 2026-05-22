@@ -42,25 +42,25 @@ def update_task_endpoint(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_from_token)
 ):
-    # Check if this is a move operation
-    if data.position is not None:
-        # We need the current column_id if not provided
-        current_task = get_task(db, task_id)
-        if not current_task:
-            raise HTTPException(status_code=404, detail="Task not found")
-            
-        target_column_id = data.column_id if data.column_id is not None else current_task.column_id
-        task = move_task(db, task_id, target_column_id, data.position, user_id=current_user.id)
-        
-        # If there are other updates (title, description etc), apply them too
-        # But we need to exclude position/column_id from data since move_task handled them
-        remaining_data = data.model_dump(exclude={"position", "column_id"}, exclude_unset=True)
-        if remaining_data:
-             # Create a partial update object
-             partial_update = TaskUpdate(**remaining_data)
-             task = update_task(db, task_id, partial_update, user_id=current_user.id)
-    else:
+    # Обычное обновление: позиция не передана — перемещение не требуется
+    if data.position is None:
         task = update_task(db, task_id, data, user_id=current_user.id)
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
+        return task
+
+    # Перемещение задачи: определяем целевую колонку (текущая, если не задана)
+    current_task = get_task(db, task_id)
+    if not current_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    target_column_id = data.column_id if data.column_id is not None else current_task.column_id
+    task = move_task(db, task_id, target_column_id, data.position, user_id=current_user.id)
+
+    # Применяем остальные поля (title, description и т.д.) — position/column_id уже обработаны move_task
+    remaining_data = data.model_dump(exclude={"position", "column_id"}, exclude_unset=True)
+    if remaining_data:
+        task = update_task(db, task_id, TaskUpdate(**remaining_data), user_id=current_user.id)
 
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")

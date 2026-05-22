@@ -8,6 +8,19 @@ from src.models.user import User
 from src.schemas.tasks import TaskCreate, TaskUpdate
 
 
+def _add_log(db: Session, task_id: int, user_id: int, message: str) -> None:
+    """Создаёт запись в журнале изменений задачи."""
+    db.add(TaskLog(task_id=task_id, user_id=user_id, message=message))
+
+
+def _moved_to_column_message(db: Session, author_name: str, column_id: int) -> str | None:
+    """Формирует сообщение о перемещении задачи в колонку, либо None если колонка не найдена."""
+    column = db.get(Column, column_id)
+    if not column:
+        return None
+    return f"{author_name} переместил задачу в колонку \"{column.name}\""
+
+
 def get_task(db: Session, task_id: int) -> Task | None:
     return db.get(Task, task_id)
 
@@ -78,11 +91,10 @@ def move_task(db: Session, task_id: int, new_column_id: int, new_position: int, 
         # Log column change
         if user_id:
             author = db.get(User, user_id)
-            new_column = db.get(Column, new_column_id)
-            if author and new_column:
-                author_name = f"{author.first_name} {author.last_name}".strip() or author.email
-                log = TaskLog(task_id=task_id, user_id=user_id, message=f"{author_name} переместил задачу в колонку \"{new_column.name}\"")
-                db.add(log)
+            if author:
+                message = _moved_to_column_message(db, author.display_name, new_column_id)
+                if message:
+                    _add_log(db, task_id, user_id, message)
 
     task.column_id = new_column_id
     task.position = new_position
@@ -100,43 +112,38 @@ def update_task(db: Session, task_id: int, data: TaskUpdate, user_id: int | None
 
     if 'is_finished' in updates:
         if updates['is_finished'] and not obj.is_finished:
-            updates['finished_at'] = datetime.datetime.utcnow()
+            updates['finished_at'] = datetime.datetime.now(datetime.UTC)
         elif not updates['is_finished']:
             updates['finished_at'] = None
 
     if user_id:
         author = db.get(User, user_id)
         if author:
-            author_name = f"{author.first_name} {author.last_name}".strip() or author.email
+            author_name = author.display_name
             
             if 'title' in updates and updates['title'] != obj.title:
-                 log = TaskLog(task_id=task_id, user_id=user_id, message=f"{author_name} изменил название задачи")
-                 db.add(log)
+                _add_log(db, task_id, user_id, f"{author_name} изменил название задачи")
 
             if 'description' in updates and updates['description'] != obj.description:
-                log = TaskLog(task_id=task_id, user_id=user_id, message=f"{author_name} изменил описание задачи")
-                db.add(log)
-            
+                _add_log(db, task_id, user_id, f"{author_name} изменил описание задачи")
+
             if 'column_id' in updates and updates['column_id'] != obj.column_id:
-                 new_column = db.get(Column, updates['column_id'])
-                 if new_column:
-                     log = TaskLog(task_id=task_id, user_id=user_id, message=f"{author_name} переместил задачу в колонку \"{new_column.name}\"")
-                     db.add(log)
+                message = _moved_to_column_message(db, author_name, updates['column_id'])
+                if message:
+                    _add_log(db, task_id, user_id, message)
 
             if 'assigned_to' in updates and updates['assigned_to'] != obj.assigned_to:
                 new_assignee_id = updates['assigned_to']
                 if new_assignee_id:
                     new_assignee = db.get(User, new_assignee_id)
                     if new_assignee:
-                        assignee_name = f"{new_assignee.first_name} {new_assignee.last_name}".strip() or new_assignee.email
-                        message = f"{author_name} передал задачу {assignee_name}"
+                        message = f"{author_name} передал задачу {new_assignee.display_name}"
                     else:
-                         message = f"{author_name} изменил исполнителя"
+                        message = f"{author_name} изменил исполнителя"
                 else:
                     message = f"{author_name} удалил исполнителя"
-                
-                log = TaskLog(task_id=task_id, user_id=user_id, message=message)
-                db.add(log)
+
+                _add_log(db, task_id, user_id, message)
 
     for k, v in updates.items():
         setattr(obj, k, v)

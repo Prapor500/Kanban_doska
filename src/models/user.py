@@ -23,3 +23,9 @@ class User(Base):
         back_populates="author", foreign_keys="[Task.created_by]")
     projects: Mapped[list["Project"]] = relationship(
         secondary="project_user", back_populates="users")
+
+    @property
+    def display_name(self) -> str:
+        """Человекочитаемое имя пользователя для логов и уведомлений."""
+        full_name = f"{self.first_name or ''} {self.last_name or ''}".strip()
+        return full_name or self.email
