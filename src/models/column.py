@@ -7,7 +7,7 @@ class Column(Base):
     __tablename__ = "column"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    project_id: Mapped[int] = mapped_column(ForeignKey("project.id"))
+    project_id: Mapped[int] = mapped_column(ForeignKey("project.id"), index=True)
     name: Mapped[str] = mapped_column(String(255))
     position: Mapped[int]
 

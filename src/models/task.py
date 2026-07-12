@@ -8,7 +8,7 @@ class Task(Base):
     __tablename__ = "task"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    column_id: Mapped[int] = mapped_column(ForeignKey("column.id"))
+    column_id: Mapped[int] = mapped_column(ForeignKey("column.id"), index=True)
     created_by: Mapped[int] = mapped_column(ForeignKey("user.id"))
     assigned_to: Mapped[int] = mapped_column(ForeignKey("user.id"))
     title: Mapped[str] = mapped_column(String(255))

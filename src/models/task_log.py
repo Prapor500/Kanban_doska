@@ -8,7 +8,7 @@ class TaskLog(Base):
     __tablename__ = "task_log"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
+    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), index=True)
     user_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"), nullable=True)
     message: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime.datetime] = mapped_column(

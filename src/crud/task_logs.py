@@ -8,10 +8,12 @@ def get_task_log(db: Session, log_id: int) -> TaskLog | None:
 
 
 def get_all_task_logs(db: Session, task_id: int | None = None) -> list[TaskLog]:
-    query = db.query(TaskLog)
+    # joinedload подгружает пользователя одним JOIN-запросом и устраняет
+    # проблему N+1: иначе TaskLogOut.user вызвал бы отдельный SELECT на каждую запись
+    query = db.query(TaskLog).options(joinedload(TaskLog.user))
     if task_id is not None:
         query = query.filter(TaskLog.task_id == task_id)
-    return query.all()
+    return query.order_by(TaskLog.created_at.asc()).all()
 
 
 def create_task_log(db: Session, data: TaskLogCreate, user_id: int | None = None) -> TaskLog:
